@@ -1,8 +1,8 @@
-import { TelegramService } from "@/telegram/telegram.service";
 import { Injectable } from "@nestjs/common";
 import { Ctx, Hears, Help, On, Start, Update } from "nestjs-telegraf";
 import { Context } from "telegraf";
 import { MESSAGES } from "../../constants";
+import { TelegramService } from './telegram.service';
 
 @Update()
 @Injectable()
