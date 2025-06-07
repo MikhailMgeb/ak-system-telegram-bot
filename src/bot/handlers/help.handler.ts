@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Context } from 'telegraf';
-import { Markup } from 'telegraf';
+import { KeyboardService } from '../keyboards/keyboard.service';
 
 @Injectable()
-export class StartHandler {
+export class HelpHandler {
+  constructor(private readonly keyboard: KeyboardService) {}
   async handle(ctx: Context) {
     const firstName = ctx.from?.first_name || 'друг';
     
     await ctx.reply(
       `Привет, ${firstName}! 👋\n\nДобро пожаловать в нашего Telegram-бота. Ниже доступное меню 👇`,
-      Markup.keyboard([['📋 Меню', '👤 Профиль'], ['ℹ️ Помощь']])
-        .resize()
-        .oneTime()
+      { reply_markup: this.keyboard.createHelpMenu() }
     );
   }
 }

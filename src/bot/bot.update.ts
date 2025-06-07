@@ -17,8 +17,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BotService } from './bot.service';
 import { StartHandler } from './handlers/start.handler';
 // import { ProfileHandler } from './handlers/profile.handler';
-// import { HelpHandler } from './handlers/help.handler';
-// import { MenuHandler } from './handlers/menu.handler';
+import { HelpHandler } from './handlers/help.handler';
+import { MenuHandler } from './handlers/menu.handler';
 // import { PaymentHandler } from './handlers/payment.handler';
 // import { BonusHandler } from './handlers/bonus.handler';
 // import { TeamHandler } from './handlers/team.handler';
@@ -32,8 +32,8 @@ export class BotUpdate {
     private readonly botService: BotService,
     private readonly startHandler: StartHandler,
     // private readonly profileHandler: ProfileHandler,
-    // private readonly helpHandler: HelpHandler,
-    // private readonly menuHandler: MenuHandler,
+    private readonly helpHandler: HelpHandler,
+    private readonly menuHandler: MenuHandler,
     // private readonly paymentHandler: PaymentHandler,
     // private readonly bonusHandler: BonusHandler,
     // private readonly teamHandler: TeamHandler,
@@ -53,21 +53,21 @@ export class BotUpdate {
   /**
    * Обработка команды /help
    */
-  // @Help()
-  // async onHelp(@Ctx() ctx: Context) {
-  //   this.logger.log(`User ${ctx.from?.id} requested help`);
-  //   await this.helpHandler.handle(ctx);
-  // }
-  //
-  // /**
-  //  * Обработка команды /menu
-  //  */
-  // @Command('menu')
-  // async onMenu(@Ctx() ctx: Context) {
-  //   this.logger.log(`User ${ctx.from?.id} requested menu`);
-  //   await this.menuHandler.showMainMenu(ctx);
-  // }
-  //
+  @Help()
+  async onHelp(@Ctx() ctx: Context) {
+    this.logger.log(`User ${ctx.from?.id} requested help`);
+    await this.helpHandler.handle(ctx);
+  }
+
+  /**
+   * Обработка команды /menu
+   */
+  @Command('menu')
+  async onMenu(@Ctx() ctx: Context) {
+    this.logger.log(`User ${ctx.from?.id} requested menu`);
+    await this.menuHandler.onBackToMenu(ctx);
+  }
+
   // /**
   //  * Обработка команды /profile
   //  */
@@ -99,41 +99,41 @@ export class BotUpdate {
   //
   // // ==================== CALLBACK QUERIES (нажатия кнопок) ====================
   //
-  // /**
-  //  * Главное меню
-  //  */
-  // @Action('back_to_menu')
-  // async onBackToMenu(@Ctx() ctx: Context) {
-  //   await this.botService.answerCallback(ctx);
-  //   await this.menuHandler.showMainMenu(ctx);
-  // }
-  //
-  // /**
+  /**
+   * Главное меню
+   */
+  @Action('back_to_menu')
+  async onBackToMenu(@Ctx() ctx: Context) {
+    await this.botService.answerCallback(ctx);
+    await this.menuHandler.onBackToMenu(ctx);
+  }
+
+  /**
   //  * Начать работу
   //  */
-  // @Action('start_work')
-  // async onStartWork(@Ctx() ctx: Context) {
-  //   await this.botService.answerCallback(ctx);
-  //   await this.botService.editMessage(
-  //     ctx,
-  //     '🚀 Начинаем работу!\n\nВыберите тип задачи:',
-  //     {
-  //       inline_keyboard: [
-  //         [
-  //           { text: '📝 Создать проект', callback_data: 'create_project' },
-  //           { text: '📂 Открыть проект', callback_data: 'open_project' }
-  //         ],
-  //         [
-  //           { text: '📊 Аналитика', callback_data: 'analytics' }
-  //         ],
-  //         [
-  //           { text: '← Назад в меню', callback_data: 'back_to_menu' }
-  //         ]
-  //       ]
-  //     }
-  //   );
-  // }
-  //
+  @Action('start_work')
+  async onStartWork(@Ctx() ctx: Context) {
+    await this.botService.answerCallback(ctx);
+    await this.botService.editMessage(
+      ctx,
+      '🚀 Начинаем работу!\n\nВыберите тип задачи:',
+      {
+        inline_keyboard: [
+          [
+            { text: '📝 Создать проект', callback_data: 'create_project' },
+            { text: '📂 Открыть проект', callback_data: 'open_project' }
+          ],
+          [
+            { text: '📊 Аналитика', callback_data: 'analytics' }
+          ],
+          [
+            { text: '← Назад в меню', callback_data: 'back_to_menu' }
+          ]
+        ]
+      }
+    );
+  }
+
   // /**
   //  * Покупка PRO
   //  */
@@ -267,13 +267,13 @@ export class BotUpdate {
   // /**
   //  * Обработка фотографий
   //  */
-  // @On('photo')
-  // async onPhoto(@Ctx() ctx: Context) {
-  //   const photos = ctx.message && 'photo' in ctx.message ? ctx.message.photo : [];
-  //   if (photos.length > 0) {
-  //     await ctx.reply('📸 Спасибо за фото! Обработка изображений в разработке.');
-  //   }
-  // }
+  @On('photo')
+  async onPhoto(@Ctx() ctx: Context) {
+    const photos = ctx.message && 'photo' in ctx.message ? ctx.message.photo : [];
+    if (photos.length > 0) {
+      await ctx.reply('📸 Спасибо за фото! Обработка изображений в разработке.');
+    }
+  }
   //
   // /**
   //  * Обработка документов
